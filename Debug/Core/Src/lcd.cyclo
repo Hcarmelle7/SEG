@@ -1,0 +1,7 @@
+../Core/Src/lcd.c:4:6:LCD_Write4Bits	1
+../Core/Src/lcd.c:17:6:LCD_SendCommand	1
+../Core/Src/lcd.c:24:6:LCD_Data	1
+../Core/Src/lcd.c:31:6:LCD_Init	1
+../Core/Src/lcd.c:55:6:LCD_Print	2
+../Core/Src/lcd.c:62:6:LCD_Clear	1
+../Core/Src/lcd.c:68:6:LCD_SetCursor	2
