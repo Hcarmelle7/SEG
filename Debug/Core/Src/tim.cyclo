@@ -1,3 +1,6 @@
-../Core/Src/tim.c:30:6:MX_TIM2_Init	4
-../Core/Src/tim.c:70:6:HAL_TIM_Base_MspInit	2
-../Core/Src/tim.c:86:6:HAL_TIM_Base_MspDeInit	2
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_bus.h:438:22:LL_APB1_GRP1_EnableClock	1
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_tim.h:1092:22:LL_TIM_DisableARRPreload	1
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_tim.h:2219:22:LL_TIM_SetClockSource	1
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_tim.h:2265:22:LL_TIM_SetTriggerOutput	1
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_tim.h:2331:22:LL_TIM_DisableMasterSlaveMode	1
+../Core/Src/tim.c:28:6:MX_TIM2_Init	1

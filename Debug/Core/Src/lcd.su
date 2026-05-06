@@ -1,7 +1,10 @@
-../Core/Src/lcd.c:4:6:LCD_Write4Bits	16	static
-../Core/Src/lcd.c:17:6:LCD_SendCommand	16	static
-../Core/Src/lcd.c:24:6:LCD_Data	16	static
-../Core/Src/lcd.c:31:6:LCD_Init	8	static
-../Core/Src/lcd.c:55:6:LCD_Print	16	static
-../Core/Src/lcd.c:62:6:LCD_Clear	8	static
-../Core/Src/lcd.c:68:6:LCD_SetCursor	24	static
+../Core/Src/lcd.c:3:13:LCD_EnableClock	24	static
+../Core/Src/lcd.c:8:13:LCD_ConfigOut	16	static
+../Core/Src/lcd.c:13:13:LCD_Write4Bits	24	static
+../Core/Src/lcd.c:23:6:LCD_SendCommand	16	static
+../Core/Src/lcd.c:29:6:LCD_Data	16	static
+../Core/Src/lcd.c:35:6:LCD_Init	40	static
+../Core/Src/lcd.c:63:6:LCD_Print	16	static
+../Core/Src/lcd.c:67:6:LCD_Clear	24	static
+../Core/Src/lcd.c:72:6:LCD_SetCursor	24	static
+../Core/Src/lcd.c:77:6:LCD_CreateChar	32	static

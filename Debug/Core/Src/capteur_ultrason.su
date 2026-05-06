@@ -1,2 +1,0 @@
-../Core/Src/capteur_ultrason.c:6:6:delay_us	16	static
-../Core/Src/capteur_ultrason.c:13:10:HCSR04_Read	16	static

@@ -1,132 +1,72 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file    adc.c
-  * @brief   This file provides code for the configuration
-  *          of the ADC instances.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
 #include "adc.h"
 
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-ADC_HandleTypeDef hadc;
-
-/* ADC init function */
-void MX_ADC_Init(void)
-{
-
-  /* USER CODE BEGIN ADC_Init 0 */
-
-  /* USER CODE END ADC_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC_Init 1 */
-
-  /* USER CODE END ADC_Init 1 */
-
-  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
-  */
-  hadc.Instance = ADC1;
-  hadc.Init.OversamplingMode = DISABLE;
-  hadc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV1;
-  hadc.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc.Init.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  hadc.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
-  hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc.Init.ContinuousConvMode = DISABLE;
-  hadc.Init.DiscontinuousConvMode = DISABLE;
-  hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc.Init.DMAContinuousRequests = DISABLE;
-  hadc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  hadc.Init.Overrun = ADC_OVR_DATA_PRESERVED;
-  hadc.Init.LowPowerAutoWait = DISABLE;
-  hadc.Init.LowPowerFrequencyMode = DISABLE;
-  hadc.Init.LowPowerAutoPowerOff = DISABLE;
-  if (HAL_ADC_Init(&hadc) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel to be converted.
-  */
-  sConfig.Channel = ADC_CHANNEL_2;
-  sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
-  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC_Init 2 */
-
-  /* USER CODE END ADC_Init 2 */
-
+// --- 1. La fonction de mapping GPIO -> Canal (Excellente, on la garde !) ---
+int adc_channel_from_gpio(GPIO_TypeDef *port, uint8_t pin) {
+    if (port == GPIOA) {
+        if ((pin >= 0) && (pin < 8)) return (int)pin;
+    }
+    if (port == GPIOB) {
+        if ((pin >= 0) && (pin < 2)) return (int)(pin + 8);
+    }
+    if (port == GPIOC) {
+        if ((pin >= 0) && (pin < 6)) return (int)(pin + 10);
+    }
+    return -1;
 }
 
-void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
-{
+// --- 2. Initialisation globale de l'ADC (À appeler UNE SEULE FOIS dans le main) ---
+void ADC_Init_Core(uint8_t resolution) {
+    // 1. Activer l'horloge
+    RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
 
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(adcHandle->Instance==ADC1)
-  {
-  /* USER CODE BEGIN ADC1_MspInit 0 */
+    // 2. Horloge de l'ADC (PCLK/4 ou PCLK/2)
+    ADC1->CFGR2 |= (0b11 << ADC_CFGR2_CKMODE_Pos);
 
-  /* USER CODE END ADC1_MspInit 0 */
-    /* ADC1 clock enable */
-    __HAL_RCC_ADC1_CLK_ENABLE();
+    // 3. Mode SINGLE (On enlève le mode continu) et Résolution
+    ADC1->CFGR1 &= ~(ADC_CFGR1_CONT | ADC_CFGR1_RES);
+    if (resolution == 10)      ADC1->CFGR1 |= (0b01 << ADC_CFGR1_RES_Pos);
+    else if (resolution == 8)  ADC1->CFGR1 |= (0b10 << ADC_CFGR1_RES_Pos);
+    else if (resolution == 6)  ADC1->CFGR1 |= (0b11 << ADC_CFGR1_RES_Pos);
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**ADC GPIO Configuration
-    PA2     ------> ADC_IN2
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_2;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    // 4. Calibration (Optimisation pro)
+    ADC1->CR |= ADC_CR_ADCAL;
+    while((ADC1->ISR & ADC_ISR_EOCAL) == 0); // Attend la fin de calibration
+    ADC1->ISR |= ADC_ISR_EOCAL;              // Nettoie le drapeau
 
-  /* USER CODE BEGIN ADC1_MspInit 1 */
-
-  /* USER CODE END ADC1_MspInit 1 */
-  }
+    // 5. Allumage final de l'ADC
+    ADC1->ISR |= ADC_ISR_ADRDY; // Clear le flag avant d'allumer
+    ADC1->CR |= ADC_CR_ADEN;
+    while(!(ADC1->ISR & ADC_ISR_ADRDY)); // Attend qu'il soit prêt
 }
 
-void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
-{
+// --- 3. Configuration d'une broche (À appeler pour CHAQUE capteur) ---
+void analog_pin_config(GPIO_TypeDef *port, uint8_t pin) {
+    // 1. Activer l'horloge du port GPIO de manière sécurisée
+    if (port == GPIOA) RCC->IOPENR |= RCC_IOPENR_GPIOAEN;
+    else if (port == GPIOB) RCC->IOPENR |= RCC_IOPENR_GPIOBEN;
+    else if (port == GPIOC) RCC->IOPENR |= RCC_IOPENR_GPIOCEN;
 
-  if(adcHandle->Instance==ADC1)
-  {
-  /* USER CODE BEGIN ADC1_MspDeInit 0 */
+    // 2. Mode Analogique (11)
+    port->MODER |= (3 << (pin * 2));
 
-  /* USER CODE END ADC1_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_ADC1_CLK_DISABLE();
-
-    /**ADC GPIO Configuration
-    PA2     ------> ADC_IN2
-    */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2);
-
-  /* USER CODE BEGIN ADC1_MspDeInit 1 */
-
-  /* USER CODE END ADC1_MspDeInit 1 */
-  }
+    // (Note : Pas besoin de toucher à l'ADC ici, on sélectionnera le canal
+    // uniquement au moment où on voudra faire la lecture)
 }
 
-/* USER CODE BEGIN 1 */
+// --- 4. Fonction de lecture ciblée (Le Multiplexage) ---
+uint32_t ADC_Read(GPIO_TypeDef *port, uint8_t pin) {
+    int channel = adc_channel_from_gpio(port, pin);
+    if (channel == -1) return 0;
 
-/* USER CODE END 1 */
+    // 1. Indique à l'ADC quel canal lire
+    ADC1->CHSELR = (1 << channel);
+
+    // 2. Lance UNE SEULE conversion
+    ADC1->CR |= ADC_CR_ADSTART;
+
+    // 3. Attend la fin de la conversion (EOC)
+    while ((ADC1->ISR & ADC_ISR_EOC) == 0);
+
+    // 4. Renvoie le résultat
+    return ADC1->DR;
+}

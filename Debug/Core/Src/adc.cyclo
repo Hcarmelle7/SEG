@@ -1,3 +1,4 @@
-../Core/Src/adc.c:30:6:MX_ADC_Init	3
-../Core/Src/adc.c:81:6:HAL_ADC_MspInit	2
-../Core/Src/adc.c:108:6:HAL_ADC_MspDeInit	2
+../Core/Src/adc.c:4:5:adc_channel_from_gpio	7
+../Core/Src/adc.c:18:6:ADC_Init_Core	6
+../Core/Src/adc.c:43:6:analog_pin_config	4
+../Core/Src/adc.c:57:10:ADC_Read	3

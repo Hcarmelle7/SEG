@@ -1,22 +1,15 @@
-#ifndef INC_KEYPAD_H_
-#define INC_KEYPAD_H_
+#ifndef KEYPAD_H_
+#define KEYPAD_H_
 
-#include "stm32l0xx_hal.h"
+#include "main.h"
 
-// Lignes (Sorties)
-#define ROW_PORT GPIOC
-#define R1_PIN GPIO_PIN_0
-#define R2_PIN GPIO_PIN_1
-#define R3_PIN GPIO_PIN_2
-#define R4_PIN GPIO_PIN_3
+typedef struct {
+    GPIO_TypeDef *port;     // Port commun pour lignes et colonnes (ex: GPIOC)
+    uint8_t startRowPin;    // Première pin des lignes (ex: 0 pour PC0-PC3)
+    uint8_t startColPin;    // Première pin des colonnes (ex: 4 pour PC4-PC7)
+} Keypad_TypeDef;
 
-// Colonnes (Entrées avec Pull-up)
-#define COL_PORT GPIOC
-#define C1_PIN GPIO_PIN_4
-#define C2_PIN GPIO_PIN_5
-#define C3_PIN GPIO_PIN_6
-#define C4_PIN GPIO_PIN_7
-
-char Keypad_GetKey(void);
+void Keypad_Init(Keypad_TypeDef *kp);
+char Keypad_GetKey(Keypad_TypeDef *kp);
 
 #endif

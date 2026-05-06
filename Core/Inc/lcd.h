@@ -1,22 +1,23 @@
-#ifndef INC_LCD_H_
-#define INC_LCD_H_
+#ifndef LCD_H_
+#define LCD_H_
 
-#include "stm32l0xx_hal.h"
+#include "main.h"
 
-// Définitions essentielles pour le compilateur
-#define LCD_RS_PORT  GPIOB
-#define LCD_RS_PIN   GPIO_PIN_0
-#define LCD_EN_PORT  GPIOB
-#define LCD_EN_PIN   GPIO_PIN_1
-#define LCD_DATA_PORT GPIOB
+typedef struct {
+    GPIO_TypeDef *portData;
+    uint8_t startPin;
+    GPIO_TypeDef *portRS;
+    uint8_t pinRS;
+    GPIO_TypeDef *portEN;
+    uint8_t pinEN;
+} LCD_Obj_Typedef; // On utilise ce nom pour éviter le conflit ST
 
-// Prototypes des fonctions
-void LCD_Init(void);
-void LCD_SendCommand(uint8_t cmd);
-void LCD_Data(uint8_t data);
-void LCD_Print(char *str);
-void LCD_Write4Bits(uint8_t val);
-void LCD_SetCursor(uint8_t row, uint8_t col);
-void LCD_Clear(void);
+void LCD_Init(LCD_Obj_Typedef *lcd);
+void LCD_Print(LCD_Obj_Typedef *lcd, char *str);
+void LCD_Clear(LCD_Obj_Typedef *lcd);
+void LCD_SetCursor(LCD_Obj_Typedef *lcd, uint8_t row, uint8_t col);
+void LCD_SendCommand(LCD_Obj_Typedef *lcd, uint8_t cmd);
+void LCD_Data(LCD_Obj_Typedef *lcd, uint8_t data);
+void LCD_CreateChar(LCD_Obj_Typedef *lcd, uint8_t location, uint8_t charmap[]);
 
-#endif
+#endif // Fin du fichier LCD_H_
