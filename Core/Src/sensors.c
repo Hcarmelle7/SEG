@@ -50,8 +50,8 @@ uint32_t Sensors_GetLightPercent(void) {
     }
     uint32_t val_brute = somme / 16;
 
-    // 2. Application du filtre exponentiel (lissage)
-    // alpha = 0.1 rend le signal très stable
+    // 2. Application du filtre exponentiel
+
     float alpha = 0.1f;
     val_filtree = (alpha * (float)val_brute) + ((1.0f - alpha) * val_filtree);
 

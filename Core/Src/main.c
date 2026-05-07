@@ -207,7 +207,7 @@ int main(void)
 	    // Cela évite l'usure du moteur et le clignotement des lumières.
 
 
-	LL_mDelay(500);
+	LL_mDelay(100);
 
 
 
