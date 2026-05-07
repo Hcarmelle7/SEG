@@ -1,0 +1,33 @@
+
+# Dossiers de compilation (Build)
+
+Debug/
+Release/
+build/
+
+
+# Fichiers objets et binaires
+
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.su
+*.out
+
+
+# Fichiers spécifiques à l'IDE (Eclipse/STM32Cube)
+
+# On ignore les métadonnées et configurations de debug locales
+.metadata/
+.settings/
+*.launch
+
+
+# Fichiers systèmes générés par l'OS
+
+.DS_Store
+Thumbs.db

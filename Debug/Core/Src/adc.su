@@ -1,4 +1,0 @@
-../Core/Src/adc.c:4:5:adc_channel_from_gpio	16	static
-../Core/Src/adc.c:18:6:ADC_Init_Core	16	static
-../Core/Src/adc.c:43:6:analog_pin_config	16	static
-../Core/Src/adc.c:57:10:ADC_Read	24	static

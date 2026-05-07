@@ -1,2 +1,0 @@
-../Core/Src/hcsr04.c:50:6:HCSR04_init	1
-../Core/Src/hcsr04.c:73:10:HCSR04_getDistance	6

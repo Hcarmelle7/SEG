@@ -1,3 +1,0 @@
-../Core/Src/sensors.c:7:6:Sensors_Loop	16	static
-../Core/Src/sensors.c:25:7:Sensors_GetTemperature	16	static
-../Core/Src/sensors.c:45:10:Sensors_GetLightPercent	48	static
